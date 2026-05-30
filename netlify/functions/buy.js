@@ -1,8 +1,9 @@
+const fetch = global.fetch;
+
 exports.handler = async (event) => {
   try {
     const { phone, bundle, network } = JSON.parse(event.body);
 
-    // Basic validation
     if (!phone || !bundle || !network) {
       return {
         statusCode: 400,
@@ -13,7 +14,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // Send request to Hubnet
     const response = await fetch(
       `https://console.hubnet.app/live/api/context/business/transaction/${network}-new-transaction`,
       {
@@ -28,7 +28,6 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
-    // Handle Hubnet errors properly
     if (!response.ok) {
       return {
         statusCode: response.status,
