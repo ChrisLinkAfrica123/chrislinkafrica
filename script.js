@@ -5,24 +5,17 @@ function buy() {
 
   document.getElementById("status").innerText = "Processing...";
 
-  fetch(`https://console.hubnet.app/live/api/context/business/transaction/${network}-new-transaction`, {
+  fetch("/.netlify/functions/buy", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer YOUR_API_KEY"
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      phone: phone,
-      bundle: bundle
-    })
+    body: JSON.stringify({ phone, network, bundle })
   })
   .then(res => res.json())
   .then(data => {
-    if (data.success) {
-      document.getElementById("status").innerText = "Success!";
-    } else {
-      document.getElementById("status").innerText = "Failed";
-    }
+    document.getElementById("status").innerText =
+      data.success ? "Success!" : "Failed";
   })
   .catch(() => {
     document.getElementById("status").innerText = "Error";
