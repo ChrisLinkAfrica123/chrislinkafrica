@@ -9,7 +9,7 @@ function buy() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer YOUR_API_KEY"
+      "Authorization": "Bearer YOUR_API_KEY"SsWImakDghFSRCIrrX3UpKttLIULGp1GcKQ
     },
     body: JSON.stringify({
       phone: phone,
