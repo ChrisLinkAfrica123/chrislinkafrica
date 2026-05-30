@@ -1,15 +1,13 @@
-const fetch = global.fetch;
-
 exports.handler = async (event) => {
   try {
     const { phone, bundle, network } = JSON.parse(event.body);
 
-    if (!phone || !bundle || !network) {
+    if (!process.env.HUBNET_API_KEY) {
       return {
-        statusCode: 400,
+        statusCode: 500,
         body: JSON.stringify({
           success: false,
-          message: "Missing required fields"
+          message: "Missing HUBNET_API_KEY in Netlify env"
         })
       };
     }
