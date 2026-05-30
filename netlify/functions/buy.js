@@ -2,13 +2,6 @@ exports.handler = async (event) => {
   try {
     const { phone, bundle, network } = JSON.parse(event.body);
 
-    // 🔴 DEBUG LOG (shows in Netlify functions logs)
-    console.log("REQUEST FROM FRONTEND:", {
-      phone,
-      bundle,
-      network
-    });
-
     if (!phone || !bundle || !network) {
       return {
         statusCode: 400,
@@ -19,26 +12,24 @@ exports.handler = async (event) => {
       };
     }
 
+    // 🔴 Convert to URL encoded format (SAFE FOR HUBNET)
+    const formBody = new URLSearchParams();
+    formBody.append("phone", phone);
+    formBody.append("bundle", String(bundle));
+
     const response = await fetch(
       `https://console.hubnet.app/live/api/context/business/transaction/${network}-new-transaction`,
       {
         method: "POST",
         headers: {
-          token: `Bearer ${process.env.HUBNET_API_KEY}`,
-          "Content-Type": "application/json"
+          token: process.env.HUBNET_API_KEY, // 🔥 NO Bearer (important)
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: JSON.stringify({
-          phone: phone,
-          bundle: Number(bundle), // 🔴 FORCE NUMBER FORMAT
-          debug: true
-        })
+        body: formBody.toString()
       }
     );
 
     const data = await response.json();
-
-    // 🔴 DEBUG LOG (Hubnet response)
-    console.log("HUBNET RESPONSE:", data);
 
     if (!response.ok) {
       return {
@@ -60,8 +51,6 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    console.log("ERROR:", error);
-
     return {
       statusCode: 500,
       body: JSON.stringify({
