@@ -2,6 +2,13 @@ exports.handler = async (event) => {
   try {
     const { phone, bundle, network } = JSON.parse(event.body);
 
+    // 🔴 DEBUG LOG (shows in Netlify functions logs)
+    console.log("REQUEST FROM FRONTEND:", {
+      phone,
+      bundle,
+      network
+    });
+
     if (!phone || !bundle || !network) {
       return {
         statusCode: 400,
@@ -21,20 +28,25 @@ exports.handler = async (event) => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          phone,
-          bundle
+          phone: phone,
+          bundle: Number(bundle), // 🔴 FORCE NUMBER FORMAT
+          debug: true
         })
       }
     );
 
     const data = await response.json();
 
+    // 🔴 DEBUG LOG (Hubnet response)
+    console.log("HUBNET RESPONSE:", data);
+
     if (!response.ok) {
       return {
         statusCode: response.status,
         body: JSON.stringify({
           success: false,
-          message: data.message || "Hubnet request failed"
+          message: data.message || "Hubnet request failed",
+          raw: data
         })
       };
     }
@@ -48,6 +60,8 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     return {
       statusCode: 500,
       body: JSON.stringify({
