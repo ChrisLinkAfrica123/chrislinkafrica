@@ -1,8 +1,10 @@
+
+const fetch = require("node-fetch");
+
 exports.handler = async (event) => {
   try {
     const { reference } = JSON.parse(event.body);
 
-    // 1. Verify payment with Paystack
     const verifyRes = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -14,7 +16,7 @@ exports.handler = async (event) => {
 
     const verifyData = await verifyRes.json();
 
-    if (!verifyData.data.status === "success") {
+    if (verifyData.data.status !== "success") {
       return {
         statusCode: 400,
         body: JSON.stringify({ success: false })
@@ -23,7 +25,6 @@ exports.handler = async (event) => {
 
     const { metadata } = verifyData.data;
 
-    // 2. Call Hubnet API to send bundle
     const hubnetRes = await fetch(
       `https://console.hubnet.app/live/api/context/business/transaction/${metadata.network}-new-transaction`,
       {
