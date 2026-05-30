@@ -18,7 +18,7 @@ exports.handler = async (event) => {
         statusCode: 400,
         body: JSON.stringify({
           success: false,
-          message: "Payment not successful"
+          message: "Payment verification failed"
         })
       };
     }
@@ -30,8 +30,8 @@ exports.handler = async (event) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.HUBNET_API_KEY}`
+          token: `Bearer ${process.env.HUBNET_API_KEY}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           phone: metadata.phone,
