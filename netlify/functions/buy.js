@@ -2,12 +2,12 @@ exports.handler = async (event) => {
   try {
     const { phone, bundle, network } = JSON.parse(event.body);
 
-    if (!process.env.HUBNET_API_KEY) {
+    if (!phone || !bundle || !network) {
       return {
-        statusCode: 500,
+        statusCode: 400,
         body: JSON.stringify({
           success: false,
-          message: "Missing HUBNET_API_KEY in Netlify env"
+          message: "Missing required fields"
         })
       };
     }
@@ -17,10 +17,13 @@ exports.handler = async (event) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.HUBNET_API_KEY}`
+          token: `Bearer ${process.env.HUBNET_API_KEY}`,
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ phone, bundle })
+        body: JSON.stringify({
+          phone,
+          bundle
+        })
       }
     );
 
