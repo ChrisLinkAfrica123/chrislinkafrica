@@ -12,20 +12,18 @@ exports.handler = async (event) => {
       };
     }
 
-    // 🔴 Convert to URL encoded format (SAFE FOR HUBNET)
-    const formBody = new URLSearchParams();
-    formBody.append("phone", phone);
-    formBody.append("bundle", String(bundle));
-
     const response = await fetch(
       `https://console.hubnet.app/live/api/context/business/transaction/${network}-new-transaction`,
       {
         method: "POST",
         headers: {
-          token: process.env.HUBNET_API_KEY, // 🔥 NO Bearer (important)
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Authorization": `Bearer ${process.env.HUBNET_API_KEY}`,
+          "Content-Type": "application/json"
         },
-        body: formBody.toString()
+        body: JSON.stringify({
+          phone,
+          bundle: Number(bundle)
+        })
       }
     );
 
