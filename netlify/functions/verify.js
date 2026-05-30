@@ -13,13 +13,12 @@ exports.handler = async (event) => {
 
     const verifyData = await verifyRes.json();
 
-    // SAFE CHECK
     if (!verifyData.data || verifyData.data.status !== "success") {
       return {
         statusCode: 400,
         body: JSON.stringify({
           success: false,
-          message: "Payment verification failed"
+          message: "Payment not successful"
         })
       };
     }
@@ -42,17 +41,6 @@ exports.handler = async (event) => {
     );
 
     const hubnetData = await hubnetRes.json();
-
-    // HUBNET ERROR CHECK
-    if (!hubnetRes.ok) {
-      return {
-        statusCode: hubnetRes.status,
-        body: JSON.stringify({
-          success: false,
-          message: hubnetData.message || "Hubnet request failed"
-        })
-      };
-    }
 
     return {
       statusCode: 200,
