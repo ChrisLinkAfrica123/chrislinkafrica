@@ -3,7 +3,8 @@ function buy() {
   const network = document.getElementById("network").value;
   const bundle = document.getElementById("bundle").value;
 
-  document.getElementById("status").innerText = "Processing...";
+  const status = document.getElementById("status");
+  status.innerText = "Processing...";
 
   fetch("/.netlify/functions/buy", {
     method: "POST",
@@ -16,12 +17,24 @@ function buy() {
       bundle
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("status").innerText =
-      data.success ? "Order sent successfully!" : "Failed";
+  .then(async (res) => {
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || data.error || "Request failed");
+    }
+
+    return data;
   })
-  .catch(() => {
-    document.getElementById("status").innerText = "Error";
+  .then((data) => {
+    if (data.success) {
+      status.innerText = "Order sent successfully!";
+    } else {
+      status.innerText = data.message || data.error || "Failed";
+    }
+  })
+  .catch((err) => {
+    status.innerText = err.message || "Error occurred";
+    console.error(err);
   });
 }
